@@ -124,6 +124,18 @@
             border-color: #667eea;
         }
 
+        /* Datalist dropdown styling */
+        datalist {
+            background: white;
+            color: #495057;
+        }
+
+        option {
+            background: white;
+            color: #495057;
+            padding: 10px;
+        }
+
         .btn {
             padding: 12px 30px;
             border: none;
@@ -382,12 +394,57 @@
                 font-size: 1.8em;
             }
         }
+
+        /* Autocomplete dropdown styling */
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 2px solid #dee2e6;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #fff;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .autocomplete-items div:hover {
+            background-color: #667eea;
+            color: white;
+        }
+
+        .autocomplete-items div:hover small {
+            color: #f0f0f0 !important;
+        }
+
+        .autocomplete-active {
+            background-color: #667eea !important;
+            color: white !important;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🏗️ House Construction Tracker</h1>
+            <h1>🏗️ Dhansvi House Tracker - PN-20</h1>
             <p>Manage Income, Expenses & Payments</p>
         </div>
 
@@ -524,7 +581,10 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Income Provider Name *</label>
-                                <input type="text" id="incomeProviderName" required placeholder="e.g., John Doe">
+                                <div class="autocomplete">
+                                    <input type="text" id="incomeProviderName" required placeholder="Type name (existing or new)" autocomplete="off">
+                                </div>
+                                <small style="color: #6c757d;">Start typing to see suggestions from existing providers</small>
                             </div>
                             <div class="form-group">
                                 <label>Amount (₹) *</label>
@@ -557,7 +617,7 @@
 
                 <div class="card">
                     <h3>Income Providers - Click to View Details</h3>
-                    <div id="incomeProvidersList" class="provider-list"></div>
+                    <div id="incomeProvidersList2" class="provider-list"></div>
                 </div>
             </div>
 
@@ -568,22 +628,18 @@
                     <form id="billForm">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Service Provider *</label>
-                                <select id="billProvider" required>
-                                    <option value="">Select Provider</option>
-                                </select>
+                                <label>Service Provider Name *</label>
+                                <div class="autocomplete">
+                                    <input type="text" id="billProviderName" required placeholder="Type name (existing or new)" autocomplete="off">
+                                </div>
+                                <small style="color: #6c757d;">Select existing or add new (creates with "General" category)</small>
                             </div>
-                            <div class="form-group">
-                                <label>Or Quick Add New Provider</label>
-                                <input type="text" id="quickProviderName" placeholder="Enter new provider name">
-                                <small style="color: #6c757d;">This will create provider with "General" category</small>
-                            </div>
-                        </div>
-                        <div class="form-row">
                             <div class="form-group">
                                 <label>Bill Amount (₹) *</label>
                                 <input type="number" id="billAmount" required min="0" step="0.01">
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>Payment Status *</label>
                                 <select id="billPaymentStatus" required>
@@ -591,22 +647,26 @@
                                     <option value="paid">Paid (Already Paid)</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label>Date *</label>
+                                <input type="date" id="billDate" required>
+                            </div>
                         </div>
                         <div id="billPaidSection" style="display: none;">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>Payment Method</label>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Payment Method</label>
                                     <select id="billPaymentMethod">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="Cheque">Cheque</option>
-                                    <option value="UPI">UPI</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="UPI">UPI</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label>Paid From Income Provider *</label>
-                                    <select id="billPaidFromIncome" required>
+                                    <select id="billPaidFromIncome">
                                         <option value="">Select Income Provider</option>
                                     </select>
                                 </div>
@@ -618,17 +678,13 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Date *</label>
-                                <input type="date" id="billDate" required>
-                            </div>
-                            <div class="form-group">
                                 <label>Bill Number</label>
                                 <input type="text" id="billNumber" placeholder="Optional">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Description</label>
-                            <textarea id="billDescription" rows="2" placeholder="What was purchased"></textarea>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea id="billDescription" rows="2" placeholder="What was purchased"></textarea>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-primary">Add Bill</button>
                     </form>
@@ -667,7 +723,7 @@
                                 <select id="paymentProvider" required>
                                     <option value="">Select Provider</option>
                                 </select>
-                </div>
+                            </div>
                             <div class="form-group">
                                 <label>Payment Amount (₹) *</label>
                                 <input type="number" id="paymentAmount" required min="0" step="0.01">
@@ -688,8 +744,8 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-group">
+                            </div>
+                            <div class="form-group">
                             <label>Paid From Income Provider *</label>
                             <select id="paymentFromIncome" required>
                                 <option value="">Select Income Provider</option>
@@ -928,9 +984,16 @@
         document.getElementById('incomeForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
+            const providerName = document.getElementById('incomeProviderName').value.trim();
+            
+            if (!providerName) {
+                alert('Please enter income provider name');
+                return;
+            }
+            
             const income = {
                 id: Date.now(),
-                providerName: document.getElementById('incomeProviderName').value,
+                providerName: providerName,
                 amount: parseFloat(document.getElementById('incomeAmount').value),
                 date: document.getElementById('incomeDate').value,
                 paymentMethod: document.getElementById('incomePaymentMethod').value,
@@ -940,8 +1003,8 @@
             data.income.push(income);
             
             // Track unique income providers
-            if (!data.incomeProviders.includes(income.providerName)) {
-                data.incomeProviders.push(income.providerName);
+            if (!data.incomeProviders.includes(providerName)) {
+                data.incomeProviders.push(providerName);
             }
             
             saveData();
@@ -955,9 +1018,26 @@
             
             let providerId, providerName, categoryName, subcategoryName;
             
-            // Check if quick add provider name is used
-            const quickProviderName = document.getElementById('quickProviderName').value.trim();
-            if (quickProviderName) {
+            // Get provider name from single input field
+            const providerNameInput = document.getElementById('billProviderName').value.trim();
+            
+            if (!providerNameInput) {
+                alert('Please enter a service provider name');
+                return;
+            }
+            
+            // Check if this provider already exists
+            const existingProvider = data.providers.find(p => 
+                p.name.toLowerCase() === providerNameInput.toLowerCase()
+            );
+            
+            if (existingProvider) {
+                // Use existing provider
+                providerId = existingProvider.id;
+                providerName = existingProvider.name;
+                categoryName = existingProvider.categoryName;
+                subcategoryName = existingProvider.subcategoryName;
+            } else {
                 // Create a new provider with "General" category
                 let generalCategory = data.categories.find(c => c.name === 'General');
                 if (!generalCategory) {
@@ -972,7 +1052,7 @@
                 
                 const newProvider = {
                     id: Date.now(),
-                    name: quickProviderName,
+                    name: providerNameInput,
                     categoryId: generalCategory.id,
                     categoryName: 'General',
                     subcategoryId: null,
@@ -985,17 +1065,6 @@
                 providerName = newProvider.name;
                 categoryName = 'General';
                 subcategoryName = '';
-            } else {
-                // Use existing provider
-                providerId = parseInt(document.getElementById('billProvider').value);
-            const provider = data.providers.find(p => p.id === providerId);
-                if (!provider) {
-                    alert('Please select a provider or enter a new provider name');
-                    return;
-                }
-                providerName = provider.name;
-                categoryName = provider.categoryName;
-                subcategoryName = provider.subcategoryName;
             }
             
             const billAmount = parseFloat(document.getElementById('billAmount').value);
@@ -1075,12 +1144,14 @@
         // Show/hide payment section based on payment status
         document.getElementById('billPaymentStatus').addEventListener('change', function() {
             const paidSection = document.getElementById('billPaidSection');
+            const incomeProviderSelect = document.getElementById('billPaidFromIncome');
+            
             if (this.value === 'paid') {
                 paidSection.style.display = 'block';
-                document.getElementById('billPaidFromIncome').required = true;
+                incomeProviderSelect.required = true;
             } else {
                 paidSection.style.display = 'none';
-                document.getElementById('billPaidFromIncome').required = false;
+                incomeProviderSelect.required = false;
             }
         });
 
@@ -1109,7 +1180,7 @@
                 const neededAmount = paymentAmount - currentBalance;
                 
                 const income = {
-                    id: Date.now(),
+                id: Date.now(),
                     providerName: incomeProviderName,
                     amount: neededAmount,
                     date: paymentDate,
@@ -1138,7 +1209,7 @@
             };
             
             data.payments.push(payment);
-                saveData();
+            saveData();
             this.reset();
             document.getElementById('paymentDate').valueAsDate = new Date();
         });
@@ -1220,16 +1291,14 @@
             }
         }
 
-        // Update provider dropdowns
+        // Update provider dropdowns (for payment form only)
         function updateProviderDropdowns() {
-            const billProviderSelect = document.getElementById('billProvider');
             const paymentProviderSelect = document.getElementById('paymentProvider');
             
             const options = data.providers.map(p => 
                 `<option value="${p.id}">${p.name} (${p.categoryName}${p.subcategoryName ? ' - ' + p.subcategoryName : ''})</option>`
             ).join('');
             
-            billProviderSelect.innerHTML = '<option value="">Select Provider</option>' + options;
             paymentProviderSelect.innerHTML = '<option value="">Select Provider</option>' + options;
         }
 
@@ -1386,7 +1455,7 @@
 
         // Display income providers list
         function updateIncomeProvidersList() {
-            const container = document.getElementById('incomeProvidersList');
+            const container = document.getElementById('incomeProvidersList2');
             
             if (data.incomeProviders.length === 0) {
                 container.innerHTML = '<div class="empty-state">No income providers yet</div>';
@@ -1565,7 +1634,7 @@
             // Category breakdown
             const categoryMap = {};
             data.bills.forEach(bill => {
-                const key = bill.categoryName;
+                const key = bill.categoryName + (bill.subcategoryName ? ' → ' + bill.subcategoryName : '');
                 categoryMap[key] = (categoryMap[key] || 0) + bill.amount;
             });
             
@@ -1598,19 +1667,27 @@
             document.getElementById('incomeBreakdown').innerHTML = incomeHtml;
             
             // Pending by provider
-            const pendingMap = {};
+            const pendingProviders = [];
             data.providers.forEach(provider => {
                 const stats = getProviderStats(provider.id);
                 if (stats.totalPending > 0) {
-                    pendingMap[provider.name] = stats.totalPending;
+                    pendingProviders.push({
+                        name: provider.name,
+                        category: provider.categoryName,
+                        subcategory: provider.subcategoryName,
+                        amount: stats.totalPending
+                    });
                 }
             });
             
-            const pendingHtml = Object.keys(pendingMap).length > 0
-                ? Object.entries(pendingMap).map(([provider, amount]) => `
-                    <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 5px; margin-bottom: 8px;">
-                        <span style="font-weight: 600;">${provider}</span>
-                        <span style="color: #dc3545; font-weight: bold;">₹${amount.toLocaleString('en-IN')}</span>
+            const pendingHtml = pendingProviders.length > 0
+                ? pendingProviders.map(p => `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 5px; margin-bottom: 8px; border: 2px solid #dee2e6;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1em; color: #495057;">${p.name}</div>
+                            <div style="font-size: 0.85em; color: #6c757d; margin-top: 3px;">${p.category}${p.subcategory ? ' → ' + p.subcategory : ''}</div>
+                        </div>
+                        <span style="color: #dc3545; font-weight: bold; font-size: 1.3em;">₹${p.amount.toLocaleString('en-IN')}</span>
                     </div>
                 `).join('')
                 : '<div class="empty-state">No pending payments</div>';
@@ -1630,6 +1707,7 @@
             updatePaymentsTable();
             updateDashboard();
             updateDataStats();
+            initializeAutocomplete();
         }
 
         // Update data statistics
@@ -1713,8 +1791,135 @@
         document.getElementById('billDate').valueAsDate = new Date();
         document.getElementById('paymentDate').valueAsDate = new Date();
 
+        // Autocomplete for Income Provider Name
+        function setupAutocomplete(inputElement, suggestions, showDetails) {
+            let currentFocus;
+            
+            inputElement.addEventListener("input", function(e) {
+                let val = this.value;
+                closeAllLists();
+                if (!val) { return false; }
+                
+                currentFocus = -1;
+                
+                const autocompleteDiv = document.createElement("DIV");
+                autocompleteDiv.setAttribute("id", this.id + "autocomplete-list");
+                autocompleteDiv.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(autocompleteDiv);
+                
+                let filteredSuggestions;
+                if (showDetails) {
+                    // For providers with category info
+                    filteredSuggestions = suggestions.filter(s => 
+                        s.name.toLowerCase().includes(val.toLowerCase())
+                    );
+                } else {
+                    // For simple string arrays
+                    filteredSuggestions = suggestions.filter(s => 
+                        s.toLowerCase().includes(val.toLowerCase())
+                    );
+                }
+                
+                filteredSuggestions.forEach(suggestion => {
+                    const itemDiv = document.createElement("DIV");
+                    
+                    if (showDetails) {
+                        // Show provider with category info
+                        const displayName = suggestion.name;
+                        const category = suggestion.categoryName + (suggestion.subcategoryName ? ' → ' + suggestion.subcategoryName : '');
+                        const matchIndex = displayName.toLowerCase().indexOf(val.toLowerCase());
+                        
+                        if (matchIndex !== -1) {
+                            itemDiv.innerHTML = displayName.substr(0, matchIndex);
+                            itemDiv.innerHTML += "<strong>" + displayName.substr(matchIndex, val.length) + "</strong>";
+                            itemDiv.innerHTML += displayName.substr(matchIndex + val.length);
+                        } else {
+                            itemDiv.innerHTML = displayName;
+                        }
+                        itemDiv.innerHTML += "<br><small style='color: #6c757d; font-size: 0.85em;'>" + category + "</small>";
+                        itemDiv.innerHTML += "<input type='hidden' value='" + displayName + "'>";
+                    } else {
+                        // Simple string display
+                        const matchIndex = suggestion.toLowerCase().indexOf(val.toLowerCase());
+                        
+                        itemDiv.innerHTML = suggestion.substr(0, matchIndex);
+                        itemDiv.innerHTML += "<strong>" + suggestion.substr(matchIndex, val.length) + "</strong>";
+                        itemDiv.innerHTML += suggestion.substr(matchIndex + val.length);
+                        itemDiv.innerHTML += "<input type='hidden' value='" + suggestion + "'>";
+                    }
+                    
+                    itemDiv.addEventListener("click", function(e) {
+                        inputElement.value = this.getElementsByTagName("input")[0].value;
+                        closeAllLists();
+                    });
+                    
+                    autocompleteDiv.appendChild(itemDiv);
+                });
+            });
+            
+            inputElement.addEventListener("keydown", function(e) {
+                let x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                
+                if (e.keyCode == 40) { // Down arrow
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) { // Up arrow
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) { // Enter
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+            
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                if (currentFocus < 0) currentFocus = (x.length - 1);
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+            
+            function removeActive(x) {
+                for (let i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
+                }
+            }
+            
+            function closeAllLists(elmnt) {
+                const items = document.getElementsByClassName("autocomplete-items");
+                for (let i = 0; i < items.length; i++) {
+                    if (elmnt != items[i] && elmnt != inputElement) {
+                        items[i].parentNode.removeChild(items[i]);
+                    }
+                }
+            }
+            
+            document.addEventListener("click", function (e) {
+                closeAllLists(e.target);
+            });
+        }
+
+        // Initialize autocomplete
+        function initializeAutocomplete() {
+            const incomeProviderInput = document.getElementById('incomeProviderName');
+            if (incomeProviderInput) {
+                setupAutocomplete(incomeProviderInput, data.incomeProviders, false);
+            }
+            
+            const billProviderInput = document.getElementById('billProviderName');
+            if (billProviderInput) {
+                // Pass full provider objects with category info
+                setupAutocomplete(billProviderInput, data.providers, true);
+            }
+        }
+
         // Initialize
         loadData();
+        initializeAutocomplete();
     </script>
 </body>
 </html>
