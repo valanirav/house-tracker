@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>House Construction Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -11,39 +14,105 @@
             box-sizing: border-box;
         }
 
+        :root {
+            /* Light Theme Colors */
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-md: 0 8px 15px rgba(0,0,0,0.15);
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+            --input-border: #dee2e6;
+            --hover-bg: #f3f4f6;
+        }
+
+        [data-theme="dark"] {
+            /* Dark Theme Colors */
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-gradient-start: #4c1d95;
+            --bg-gradient-end: #5b21b6;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-tertiary: #9ca3af;
+            --border-color: #374151;
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.3);
+            --shadow-md: 0 8px 15px rgba(0,0,0,0.5);
+            --card-bg: #1f2937;
+            --input-bg: #374151;
+            --input-border: #4b5563;
+            --hover-bg: #374151;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             min-height: 100vh;
             padding: 20px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background 0.3s ease;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
+            background: var(--card-bg);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: var(--shadow-md);
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            position: relative;
+            transition: background 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
         }
 
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
         .tabs {
             display: flex;
-            background: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
+            background: var(--bg-primary);
+            border-bottom: 2px solid var(--border-color);
             flex-wrap: wrap;
+            transition: all 0.3s ease;
         }
 
         .tab {
@@ -53,19 +122,19 @@
             text-align: center;
             cursor: pointer;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-secondary);
             transition: all 0.3s;
             border-bottom: 3px solid transparent;
         }
 
         .tab:hover {
-            background: #e9ecef;
+            background: var(--hover-bg);
         }
 
         .tab.active {
             color: #667eea;
             border-bottom-color: #667eea;
-            background: white;
+            background: var(--card-bg);
         }
 
         .content {
@@ -87,11 +156,12 @@
         }
 
         .card {
-            background: #f8f9fa;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 25px;
             margin-bottom: 20px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s ease;
         }
 
         .card h3 {
@@ -192,22 +262,114 @@
         }
 
         .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 30px;
+            border-radius: 15px;
             text-align: center;
+            box-shadow: var(--shadow-sm);
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Individual card colors - work in both themes */
+        .stat-card-income {
+            border-left-color: #10b981;
+        }
+
+        [data-theme="light"] .stat-card-income {
+            background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%);
+        }
+
+        [data-theme="dark"] .stat-card-income {
+            background: linear-gradient(135deg, #064e3b 0%, #1f2937 100%);
+        }
+
+        .stat-card-bills {
+            border-left-color: #3b82f6;
+        }
+
+        [data-theme="light"] .stat-card-bills {
+            background: linear-gradient(135deg, #eff6ff 0%, #ffffff 100%);
+        }
+
+        [data-theme="dark"] .stat-card-bills {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1f2937 100%);
+        }
+
+        .stat-card-paid {
+            border-left-color: #10b981;
+        }
+
+        [data-theme="light"] .stat-card-paid {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+        }
+
+        [data-theme="dark"] .stat-card-paid {
+            background: linear-gradient(135deg, #065f46 0%, #1f2937 100%);
+        }
+
+        .stat-card-pending {
+            border-left-color: #f59e0b;
+        }
+
+        [data-theme="light"] .stat-card-pending {
+            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+        }
+
+        [data-theme="dark"] .stat-card-pending {
+            background: linear-gradient(135deg, #78350f 0%, #1f2937 100%);
         }
 
         .stat-card h4 {
-            font-size: 0.9em;
-            opacity: 0.9;
-            margin-bottom: 10px;
+            font-size: 0.85em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin-bottom: 15px;
         }
 
         .stat-card .amount {
-            font-size: 2em;
-            font-weight: bold;
+            font-size: 2.2em;
+            font-weight: 700;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            letter-spacing: -0.5px;
+        }
+
+        .stat-card-income .amount {
+            color: #10b981;
+        }
+
+        .stat-card-bills .amount {
+            color: #3b82f6;
+        }
+
+        .stat-card-paid .amount {
+            color: #059669;
+        }
+
+        .stat-card-pending .amount {
+            color: #f59e0b;
+        }
+
+        /* Icon background for cards */
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: -30px;
+            width: 150px;
+            height: 150px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 50%;
         }
 
         .provider-list {
@@ -216,10 +378,10 @@
         }
 
         .provider-card {
-            background: white;
+            background: var(--card-bg);
             padding: 20px;
             border-radius: 10px;
-            border: 2px solid #dee2e6;
+            border: 2px solid var(--border-color);
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -229,21 +391,14 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
         }
 
-        .provider-card .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
         .provider-card .name {
             font-size: 1.3em;
             font-weight: bold;
-            color: #495057;
+            color: var(--text-primary);
         }
 
         .provider-card .category {
-            color: #6c757d;
+            color: var(--text-secondary);
             font-size: 0.9em;
         }
 
@@ -314,19 +469,21 @@
         }
 
         th, td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
         }
 
         th {
-            background: #f8f9fa;
+            background: var(--bg-primary);
             font-weight: 600;
-            color: #495057;
+            color: var(--text-secondary);
         }
 
         tr:hover {
-            background: #f8f9fa;
+            background: var(--hover-bg);
         }
 
         .tag {
@@ -439,11 +596,89 @@
             background-color: #667eea !important;
             color: white !important;
         }
+
+        /* Search input */
+        .search-box {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 40px 12px 40px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+        }
+
+        /* Edit button styles */
+        .edit-btn {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .edit-btn:hover {
+            background: #138496;
+        }
+
+        /* Status badges with colors */
+        .status-paid {
+            background: #d4edda;
+            color: #155724;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        /* Category color badges */
+        .category-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+        }
+
+        .category-general { background: #e9ecef; color: #495057; }
+        .category-materials { background: #cfe2ff; color: #084298; }
+        .category-labor { background: #f8d7da; color: #842029; }
+        .category-electrical { background: #fff3cd; color: #664d03; }
+        .category-plumbing { background: #d1e7dd; color: #0f5132; }
+        .category-painting { background: #ffc107; color: #000; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <button class="theme-toggle" onclick="toggleTheme()">
+                <span id="themeIcon">🌙</span> <span id="themeText">Dark Mode</span>
+            </button>
             <h1>🏗️ Dhansvi House Tracker - PN-20</h1>
             <p>Manage Income, Expenses & Payments</p>
         </div>
@@ -462,19 +697,19 @@
             <!-- Dashboard Tab -->
             <div id="dashboard" class="tab-content active">
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <div class="stat-card stat-card-income">
                         <h4>Total Income</h4>
                         <div class="amount" id="totalIncome">₹0</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card stat-card-bills">
                         <h4>Total Bills</h4>
                         <div class="amount" id="totalBills">₹0</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card stat-card-paid">
                         <h4>Total Paid</h4>
                         <div class="amount" id="totalPaid">₹0</div>
                     </div>
-                    <div class="stat-card">
+                    <div class="stat-card stat-card-pending">
                         <h4>Total Pending</h4>
                         <div class="amount" id="totalPending">₹0</div>
                     </div>
@@ -569,6 +804,9 @@
 
                 <div class="card">
                     <h3>Service Providers - Click to View Details</h3>
+                    <div class="search-box">
+                        <input type="text" id="providersSearch" placeholder="Search providers by name or category..." onkeyup="searchProviders()">
+                    </div>
                     <div id="providersList" class="provider-list"></div>
                 </div>
             </div>
@@ -692,6 +930,9 @@
 
                 <div class="card">
                     <h3>All Bills</h3>
+                    <div class="search-box">
+                        <input type="text" id="billsSearch" placeholder="Search bills by provider, category, description..." onkeyup="searchBills()">
+                    </div>
                     <div style="overflow-x: auto;">
                         <table>
                             <thead>
@@ -720,20 +961,29 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Service Provider *</label>
-                                <select id="paymentProvider" required>
+                                <select id="paymentProvider" required onchange="updateBillDropdown()">
                                     <option value="">Select Provider</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Payment Amount (₹) *</label>
-                                <input type="number" id="paymentAmount" required min="0" step="0.01">
+                                <label>Bill to Pay *</label>
+                                <select id="paymentBill" required>
+                                    <option value="">First select provider</option>
+                                </select>
+                                <small style="color: #6c757d;">Select which bill this payment is for</small>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
+                                <label>Payment Amount (₹) *</label>
+                                <input type="number" id="paymentAmount" required min="0" step="0.01">
+                            </div>
+                            <div class="form-group">
                                 <label>Date *</label>
                                 <input type="date" id="paymentDate" required>
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label>Payment Method</label>
                                 <select id="paymentMethod">
@@ -744,13 +994,13 @@
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                            </div>
                             <div class="form-group">
-                            <label>Paid From Income Provider *</label>
-                            <select id="paymentFromIncome" required>
-                                <option value="">Select Income Provider</option>
-                            </select>
-                            <small style="color: #6c757d;">Income entry will be auto-created if needed</small>
+                                <label>Paid From Income Provider *</label>
+                                <select id="paymentFromIncome" required>
+                                    <option value="">Select Income Provider</option>
+                                </select>
+                                <small style="color: #6c757d;">Income entry will be auto-created if needed</small>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label>Reference/Notes</label>
@@ -762,12 +1012,16 @@
 
                 <div class="card">
                     <h3>Payment History</h3>
+                    <div class="search-box">
+                        <input type="text" id="paymentsSearch" placeholder="Search payments by provider, method, reference..." onkeyup="searchPayments()">
+                    </div>
                     <div style="overflow-x: auto;">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Date</th>
                                     <th>Service Provider</th>
+                                    <th>Bill Info</th>
                                     <th>Amount</th>
                                     <th>Method</th>
                                     <th>From Income</th>
@@ -915,7 +1169,14 @@
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             
-            event.target.classList.add('active');
+            // Find and activate the correct tab
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                if (tab.getAttribute('onclick').includes(tabName)) {
+                    tab.classList.add('active');
+                }
+            });
+            
             document.getElementById(tabName).classList.add('active');
         }
 
@@ -1125,6 +1386,7 @@
                     id: Date.now() + 1,
                     providerId: providerId,
                     providerName: providerName,
+                    billId: bill.id,
                     amount: billAmount,
                     date: billDate,
                     method: document.getElementById('billPaymentMethod').value,
@@ -1160,7 +1422,9 @@
             e.preventDefault();
             
             const providerId = parseInt(document.getElementById('paymentProvider').value);
+            const billId = parseInt(document.getElementById('paymentBill').value);
             const provider = data.providers.find(p => p.id === providerId);
+            const bill = data.bills.find(b => b.id === billId);
             const paymentAmount = parseFloat(document.getElementById('paymentAmount').value);
             const paymentDate = document.getElementById('paymentDate').value;
             const paymentMethod = document.getElementById('paymentMethod').value;
@@ -1169,6 +1433,22 @@
             if (!incomeProviderName) {
                 alert('Please select an income provider. Payment must be made from income source.');
                 return;
+            }
+            
+            if (!billId) {
+                alert('Please select which bill this payment is for.');
+                return;
+            }
+            
+            // Check if payment amount exceeds bill pending amount
+            const billPayments = data.payments.filter(p => p.billId === billId);
+            const alreadyPaid = billPayments.reduce((sum, p) => sum + p.amount, 0);
+            const pending = bill.amount - alreadyPaid;
+            
+            if (paymentAmount > pending) {
+                if (!confirm(`This payment (₹${paymentAmount}) exceeds the pending amount (₹${pending}) for this bill. Continue anyway?`)) {
+                    return;
+                }
             }
             
             // Calculate current balance of income provider
@@ -1196,11 +1476,12 @@
                 }
             }
             
-            // Create payment entry
+            // Create payment entry with billId
             const payment = {
                 id: Date.now() + 1,
                 providerId: providerId,
                 providerName: provider.name,
+                billId: billId,
                 amount: paymentAmount,
                 date: paymentDate,
                 method: paymentMethod,
@@ -1212,6 +1493,7 @@
             saveData();
             this.reset();
             document.getElementById('paymentDate').valueAsDate = new Date();
+            document.getElementById('paymentBill').innerHTML = '<option value="">First select provider</option>';
         });
 
         // Update category dropdowns
@@ -1302,6 +1584,37 @@
             paymentProviderSelect.innerHTML = '<option value="">Select Provider</option>' + options;
         }
 
+        // Update bill dropdown based on selected provider
+        function updateBillDropdown() {
+            const providerId = parseInt(document.getElementById('paymentProvider').value);
+            const billSelect = document.getElementById('paymentBill');
+            
+            if (!providerId) {
+                billSelect.innerHTML = '<option value="">First select provider</option>';
+                return;
+            }
+            
+            // Get all bills for this provider with pending amounts
+            const providerBills = data.bills.filter(b => b.providerId === providerId);
+            
+            if (providerBills.length === 0) {
+                billSelect.innerHTML = '<option value="">No bills found for this provider</option>';
+                return;
+            }
+            
+            const billOptions = providerBills.map(bill => {
+                // Calculate pending amount for this bill
+                const billPayments = data.payments.filter(p => p.billId === bill.id);
+                const paid = billPayments.reduce((sum, p) => sum + p.amount, 0);
+                const pending = bill.amount - paid;
+                const status = pending > 0 ? `Pending: ₹${pending.toLocaleString('en-IN')}` : 'Fully Paid';
+                
+                return `<option value="${bill.id}">${bill.date} - ₹${bill.amount.toLocaleString('en-IN')} (${status})${bill.description ? ' - ' + bill.description : ''}</option>`;
+            }).join('');
+            
+            billSelect.innerHTML = '<option value="">Select Bill</option>' + billOptions;
+        }
+
         // Update income provider dropdown
         function updateIncomeProviderDropdown() {
             const paymentSelect = document.getElementById('paymentFromIncome');
@@ -1330,7 +1643,7 @@
         }
 
         // Display providers list
-        function updateProvidersList() {
+        function updateProvidersList(searchTerm = '') {
             const container = document.getElementById('providersList');
             
             if (data.providers.length === 0) {
@@ -1338,7 +1651,21 @@
                 return;
             }
             
-            container.innerHTML = data.providers.map(provider => {
+            let filteredProviders = data.providers;
+            if (searchTerm) {
+                filteredProviders = data.providers.filter(provider => 
+                    provider.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    provider.categoryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (provider.subcategoryName && provider.subcategoryName.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+            }
+            
+            if (filteredProviders.length === 0) {
+                container.innerHTML = '<div class="empty-state">No matching providers found</div>';
+                return;
+            }
+            
+            container.innerHTML = filteredProviders.map(provider => {
                 const stats = getProviderStats(provider.id);
                 return `
                     <div class="provider-card" onclick="showProviderDetails(${provider.id})">
@@ -1359,6 +1686,12 @@
                     </div>
                 `;
             }).join('');
+        }
+
+        // Search providers
+        function searchProviders() {
+            const searchTerm = document.getElementById('providersSearch').value;
+            updateProvidersList(searchTerm);
         }
 
         // Show provider details modal
@@ -1553,7 +1886,7 @@
         }
 
         // Update bills table
-        function updateBillsTable() {
+        function updateBillsTable(searchTerm = '') {
             const tbody = document.getElementById('billsTableBody');
             
             if (data.bills.length === 0) {
@@ -1561,9 +1894,25 @@
                 return;
             }
             
-            tbody.innerHTML = data.bills.map(bill => {
-                const payments = data.payments.filter(p => p.providerId === bill.providerId);
-                const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+            let filteredBills = data.bills;
+            if (searchTerm) {
+                filteredBills = data.bills.filter(bill => 
+                    bill.providerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    bill.categoryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (bill.subcategoryName && bill.subcategoryName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (bill.description && bill.description.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+            }
+            
+            if (filteredBills.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No matching bills found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredBills.map(bill => {
+                // Calculate paid amount for THIS specific bill only
+                const billPayments = data.payments.filter(p => p.billId === bill.id);
+                const totalPaid = billPayments.reduce((sum, p) => sum + p.amount, 0);
                 const pending = bill.amount - totalPaid;
                 const status = pending <= 0 ? 'Paid' : 'Pending';
                 
@@ -1573,35 +1922,75 @@
                         <td>${bill.providerName}</td>
                         <td>${bill.categoryName}${bill.subcategoryName ? ' → ' + bill.subcategoryName : ''}</td>
                         <td>₹${bill.amount.toLocaleString('en-IN')}</td>
-                        <td>₹${totalPaid.toLocaleString('en-IN')}</td>
-                        <td>₹${Math.max(0, pending).toLocaleString('en-IN')}</td>
-                        <td><span class="tag ${status === 'Paid' ? 'tag-paid' : 'tag-pending'}">${status}</span></td>
-                        <td><button class="btn btn-danger btn-small" onclick="deleteBill(${bill.id})">Delete</button></td>
+                        <td style="color: #28a745; font-weight: 600;">₹${totalPaid.toLocaleString('en-IN')}</td>
+                        <td style="color: #dc3545; font-weight: 600;">₹${Math.max(0, pending).toLocaleString('en-IN')}</td>
+                        <td><span class="status-${status.toLowerCase()}">${status}</span></td>
+                        <td>
+                            <button class="edit-btn" onclick="editBill(${bill.id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteBill(${bill.id})">Delete</button>
+                        </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Search bills
+        function searchBills() {
+            const searchTerm = document.getElementById('billsSearch').value;
+            updateBillsTable(searchTerm);
+        }
+
+        // Update payments table
+        function updatePaymentsTable(searchTerm = '') {
+            const tbody = document.getElementById('paymentsTableBody');
+            
+            if (data.payments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No payments recorded yet</td></tr>';
+                return;
+            }
+            
+            let filteredPayments = data.payments;
+            if (searchTerm) {
+                filteredPayments = data.payments.filter(payment => 
+                    payment.providerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    payment.method.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (payment.fromIncome && payment.fromIncome.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (payment.reference && payment.reference.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+            }
+            
+            if (filteredPayments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No matching payments found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filteredPayments.map(payment => {
+                // Find the bill this payment is for
+                const bill = data.bills.find(b => b.id === payment.billId);
+                const billInfo = bill ? `${bill.date} - ₹${bill.amount.toLocaleString('en-IN')}` : 'N/A';
+                
+                return `
+                    <tr>
+                        <td>${payment.date}</td>
+                        <td>${payment.providerName}</td>
+                        <td style="font-size: 0.9em; color: #6c757d;">${billInfo}</td>
+                        <td style="color: #28a745; font-weight: 600;">₹${payment.amount.toLocaleString('en-IN')}</td>
+                        <td><span class="category-badge category-general">${payment.method}</span></td>
+                        <td>${payment.fromIncome || '-'}</td>
+                        <td>${payment.reference || '-'}</td>
+                        <td>
+                            <button class="edit-btn" onclick="editPayment(${payment.id})">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deletePayment(${payment.id})">Delete</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Update payments table
-        function updatePaymentsTable() {
-            const tbody = document.getElementById('paymentsTableBody');
-            
-            if (data.payments.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No payments recorded yet</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = data.payments.map(payment => `
-                <tr>
-                    <td>${payment.date}</td>
-                    <td>${payment.providerName}</td>
-                    <td>₹${payment.amount.toLocaleString('en-IN')}</td>
-                    <td>${payment.method}</td>
-                    <td>${payment.fromIncome || '-'}</td>
-                    <td>${payment.reference || '-'}</td>
-                    <td><button class="btn btn-danger btn-small" onclick="deletePayment(${payment.id})">Delete</button></td>
-                </tr>
-            `).join('');
+        // Search payments
+        function searchPayments() {
+            const searchTerm = document.getElementById('paymentsSearch').value;
+            updatePaymentsTable(searchTerm);
         }
 
         // Delete functions
@@ -1616,6 +2005,57 @@
             if (confirm('Are you sure you want to delete this payment?')) {
                 data.payments = data.payments.filter(p => p.id !== id);
                 saveData();
+            }
+        }
+
+        // Edit functions
+        function editBill(id) {
+            const bill = data.bills.find(b => b.id === id);
+            if (!bill) return;
+            
+            document.getElementById('billProviderName').value = bill.providerName;
+            document.getElementById('billAmount').value = bill.amount;
+            document.getElementById('billDate').value = bill.date;
+            document.getElementById('billNumber').value = bill.billNumber || '';
+            document.getElementById('billDescription').value = bill.description || '';
+            
+            // Delete old bill and let user re-submit
+            if (confirm('Edit mode: Make your changes and click "Add Bill" to update. The old entry will be replaced.')) {
+                data.bills = data.bills.filter(b => b.id !== id);
+                saveData();
+                
+                // Scroll to form
+                document.getElementById('billForm').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function editPayment(id) {
+            const payment = data.payments.find(p => p.id === id);
+            if (!payment) return;
+            
+            // Find provider and set dropdown
+            const provider = data.providers.find(pr => pr.name === payment.providerName);
+            if (provider) {
+                document.getElementById('paymentProvider').value = provider.id;
+            }
+            
+            document.getElementById('paymentAmount').value = payment.amount;
+            document.getElementById('paymentDate').value = payment.date;
+            document.getElementById('paymentMethod').value = payment.method;
+            document.getElementById('paymentFromIncome').value = payment.fromIncome || '';
+            document.getElementById('paymentReference').value = payment.reference || '';
+            
+            // Delete old payment and let user re-submit
+            if (confirm('Edit mode: Make your changes and click "Record Payment" to update. The old entry will be replaced.')) {
+                data.payments = data.payments.filter(p => p.id !== id);
+                // Also remove the associated auto-created income if exists
+                saveData();
+                
+                // Switch to payments tab and scroll to form
+                switchTab('payments');
+                setTimeout(() => {
+                    document.getElementById('paymentForm').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
             }
         }
 
@@ -1791,6 +2231,45 @@
         document.getElementById('billDate').valueAsDate = new Date();
         document.getElementById('paymentDate').valueAsDate = new Date();
 
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update button text and icon
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (newTheme === 'dark') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const themeIcon = document.getElementById('themeIcon');
+            const themeText = document.getElementById('themeText');
+            
+            if (savedTheme === 'dark') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+
         // Autocomplete for Income Provider Name
         function setupAutocomplete(inputElement, suggestions, showDetails) {
             let currentFocus;
@@ -1920,6 +2399,7 @@
         // Initialize
         loadData();
         initializeAutocomplete();
+        loadTheme();
     </script>
 </body>
 </html>
