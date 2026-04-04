@@ -435,6 +435,16 @@
                 font-size: 0.9em;
             }
 
+            .pending-dashboard-row {
+                cursor: pointer;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+
+            .pending-dashboard-row:hover {
+                border-color: #667eea !important;
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            }
+
             .modal {
                 display: none;
                 position: fixed;
@@ -2281,7 +2291,7 @@
                         </div>
                         <div style="background: #fff3cd; padding: 15px; border-radius: 8px; text-align: center;">
                             <div style="font-size: 0.9em; color: #856404;">Pending</div>
-                            <div style="font-size: 1.5em; font-weight: bold; color: #dc3545;">₹${stats.totalPending.toLocaleString("en-IN")}</div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: ${stats.totalPending < 0 ? "#28a745" : "#dc3545"};">${formatRupeeSigned(stats.totalPending)}</div>
                         </div>
                     </div>
                 </div>
@@ -2757,6 +2767,12 @@
                 }
             }
 
+            function formatRupeeSigned(amount) {
+                const abs = Math.abs(amount).toLocaleString("en-IN");
+                if (amount < 0) return "-₹" + abs;
+                return "₹" + abs;
+            }
+
             // Update dashboard
             function updateDashboard() {
                 const totalIncome = data.income.reduce(
@@ -2817,18 +2833,33 @@
                         (incomeMap[inc.providerName] || 0) + inc.amount;
                 });
 
+                const incomeEntries = Object.entries(incomeMap);
+                const incomeGrandTotal = incomeEntries.reduce(
+                    (s, [, v]) => s + v,
+                    0,
+                );
                 const incomeHtml =
-                    Object.keys(incomeMap).length > 0
-                        ? Object.entries(incomeMap)
+                    incomeEntries.length > 0
+                        ? incomeEntries
                               .map(
                                   ([provider, amount]) => `
                     <div style="display: flex; justify-content: space-between; padding: 10px; background: white; border-radius: 5px; margin-bottom: 8px;">
                         <span style="font-weight: 600;">${provider}</span>
-                        <span style="color: #28a745; font-weight: bold;">₹${amount.toLocaleString("en-IN")}</span>
+                        <span style="color: ${
+                                      amount < 0 ? "#dc3545" : "#28a745"
+                            }; font-weight: bold;">${formatRupeeSigned(amount)}</span>
                     </div>
                 `,
                               )
-                              .join("")
+                              .join("") +
+                          `
+                    <div style="display: flex; justify-content: space-between; padding: 12px 10px; margin-top: 4px; border-top: 2px solid #dee2e6; background: #f8f9fa; border-radius: 5px; font-weight: 700;">
+                        <span>Total</span>
+                        <span style="color: ${
+                              incomeGrandTotal < 0 ? "#dc3545" : "#28a745"
+                          };">${formatRupeeSigned(incomeGrandTotal)}</span>
+                    </div>
+                `
                         : '<div class="empty-state">No income yet</div>';
 
                 document.getElementById("incomeBreakdown").innerHTML =
@@ -2838,8 +2869,9 @@
                 const pendingProviders = [];
                 data.providers.forEach((provider) => {
                     const stats = getProviderStats(provider.id);
-                    if (stats.totalPending > 0) {
+                    if (stats.totalPending !== 0) {
                         pendingProviders.push({
+                            id: provider.id,
                             name: provider.name,
                             category: provider.categoryName,
                             subcategory: provider.subcategoryName,
@@ -2848,21 +2880,46 @@
                     }
                 });
 
+                pendingProviders.sort((a, b) => b.amount - a.amount);
+
+                const pendingNetTotal = pendingProviders.reduce(
+                    (s, p) => s + p.amount,
+                    0,
+                );
+
                 const pendingHtml =
                     pendingProviders.length > 0
                         ? pendingProviders
-                              .map(
-                                  (p) => `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 5px; margin-bottom: 8px; border: 2px solid #dee2e6;">
+                              .map((p) => {
+                                  const amtColor =
+                                      p.amount > 0
+                                          ? "#dc3545"
+                                          : p.amount < 0
+                                            ? "#28a745"
+                                            : "#495057";
+                                  return `
+                    <div role="button" tabindex="0" class="pending-dashboard-row" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: white; border-radius: 5px; margin-bottom: 8px; border: 2px solid #dee2e6;" onclick="showProviderDetails(${p.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showProviderDetails(${p.id});}">
                         <div>
                             <div style="font-weight: 600; font-size: 1.1em; color: #495057;">${p.name}</div>
                             <div style="font-size: 0.85em; color: #6c757d; margin-top: 3px;">${p.category}${p.subcategory ? " → " + p.subcategory : ""}</div>
                         </div>
-                        <span style="color: #dc3545; font-weight: bold; font-size: 1.3em;">₹${p.amount.toLocaleString("en-IN")}</span>
+                        <span style="color: ${amtColor}; font-weight: bold; font-size: 1.3em;">${formatRupeeSigned(p.amount)}</span>
                     </div>
-                `,
-                              )
-                              .join("")
+                `;
+                              })
+                              .join("") +
+                          `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-top: 4px; border-top: 2px solid #dee2e6; background: #f8f9fa; border-radius: 5px; font-weight: 700;">
+                        <span style="font-size: 1.05em;">Total pending (net)</span>
+                        <span style="color: ${
+                            pendingNetTotal > 0
+                                ? "#dc3545"
+                                : pendingNetTotal < 0
+                                  ? "#28a745"
+                                  : "#495057"
+                        }; font-weight: bold; font-size: 1.3em;">${formatRupeeSigned(pendingNetTotal)}</span>
+                    </div>
+                `
                         : '<div class="empty-state">No pending payments</div>';
 
                 document.getElementById("pendingByProvider").innerHTML =
